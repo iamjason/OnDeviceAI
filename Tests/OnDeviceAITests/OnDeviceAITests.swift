@@ -52,6 +52,13 @@ struct Failure: Error {}
         #expect(await tasks.title(for: "Should we delete the heap dump?", maxWords: 3) == "We delete the…")
     }
 
+    @Test func titleFallsBackToTheCallersFallback() async {
+        let failing = TextTasks(model: ScriptedModel { _, _ in throw Failure() })
+        #expect(await failing.title(for: "Build command: xcodebuild test", fallback: "Build 7") == "Build 7")
+        let missing = TextTasks(model: UnavailableModel(reason: "test"))
+        #expect(await missing.title(for: "Build command: xcodebuild test", fallback: "Build 7") == "Build 7")
+    }
+
     @Test func titleFallsBackWithoutAModel() async {
         let tasks = TextTasks(model: UnavailableModel(reason: "test"))
         #expect(await tasks.title(for: "Badge tone mapping") == "Badge tone mapping")

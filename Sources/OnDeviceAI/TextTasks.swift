@@ -11,8 +11,9 @@ public struct TextTasks: Sendable {
 
     /// A short title for TEXT, at most MAX_WORDS words, like a tab or window title. CONTEXT says what the title
     /// is for ("a terminal tab where a developer discusses this question"), which helps the model pick what matters.
-    public func title(for text: String, maxWords: Int = 5, context: String? = nil) async -> String {
-        let fallback = Heuristics.title(from: text, maxWords: maxWords)
+    /// FALLBACK is the answer without the model; nil takes the first words of TEXT (`Heuristics.title`).
+    public func title(for text: String, maxWords: Int = 5, context: String? = nil, fallback: String? = nil) async -> String {
+        let fallback = fallback ?? Heuristics.title(from: text, maxWords: maxWords)
         guard model.availability.isAvailable else { return fallback }
         var instructions = [
             "You write very short titles. Reply with only the title: at most \(maxWords) words, no quotes, no "
